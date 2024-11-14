@@ -9,6 +9,7 @@ import java.util.List;
  * @author AlejandroFoglino
  */
 public class AlgoritmoDeBlockchainImpl implements AlgoritmoDeBlockchain {
+
     @Override
     public List<List<Bloque>> construirBlockchain(List<Transaccion> transacciones,
                                                   int maxTamanioBloque,

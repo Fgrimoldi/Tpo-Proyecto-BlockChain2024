@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="LibreriasBlockchain">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../LibreriasBlockchain.jar!/" />
+      <root url="jar://$PROJECT_DIR$/LibreriasBlockchain.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
