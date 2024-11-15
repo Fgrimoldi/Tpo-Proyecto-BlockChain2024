@@ -21,7 +21,7 @@ public class AlgoritmoDeBlockchainImpl implements AlgoritmoDeBlockchain {
         List<List<Bloque>> soluciones = new ArrayList<>();
         List<Bloque> bloquesActuales = new ArrayList<>();
         construirBlockchainRecursivo(transacciones, maxTamanioBloque, maxValorBloque, maxTransacciones, // se llama
-                // Recursivamente al metodo countruiBlocjchainRecursivo
+                // Recursivamente al metodo countruirBlockchainRecursivo
                 0, new ArrayList<>(), soluciones, bloquesActuales);
         return soluciones;
     }
@@ -45,14 +45,16 @@ public class AlgoritmoDeBlockchainImpl implements AlgoritmoDeBlockchain {
                     Transaccion transaccion = transacciones.get(i);
                     if (sePuedeAgregar(transaccion, bloqueActual)) { // Verifica si cumple con los permisos para guardarolo
                         bloqueActual.add(transaccion); // Agrega la transaccion al bloque actual
-                        // Vuelve analizar otra combinacion de transaccion para el bloque
+                        // Explora el siguiente nivel del arbol de combinaciones
                         construirBlockchainRecursivo(transacciones, maxTamanioBloque, maxValorBloque, maxTransacciones,
                                 i + 1, bloqueActual, soluciones, bloquesActuales);
-                        bloqueActual.remove(bloqueActual.size() - 1);
+                        bloqueActual.remove(bloqueActual.size() - 1); //
                     }
                 }
-                bloquesActuales.remove(bloquesActuales.size() - 1);
             }
+        }
+        if (!bloquesActuales.isEmpty()){
+            bloquesActuales.remove(bloquesActuales.size() - 1);
         }
     }
 
