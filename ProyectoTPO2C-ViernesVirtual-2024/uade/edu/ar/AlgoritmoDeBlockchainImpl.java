@@ -13,36 +13,39 @@ import java.util.List;
 public class AlgoritmoDeBlockchainImpl implements AlgoritmoDeBlockchain {
 
     @Override
-    public List<List<Bloque>> construirBlockchain(List<Transaccion> transacciones,
+    public List<List<Bloque>> construirBlockchain(List<Transaccion> transacciones, // Algoritmo Base
                                                   int maxTamanioBloque,
                                                   int maxValorBloque,
                                                   int maxTransacciones,
                                                   int maxBloques) {
         List<List<Bloque>> soluciones = new ArrayList<>();
         List<Bloque> bloquesActuales = new ArrayList<>();
-        construirBlockchainRecursivo(transacciones, maxTamanioBloque, maxValorBloque, maxTransacciones,
+        construirBlockchainRecursivo(transacciones, maxTamanioBloque, maxValorBloque, maxTransacciones, // se llama
+                // Recursivamente al metodo countruiBlocjchainRecursivo
                 0, new ArrayList<>(), soluciones, bloquesActuales);
         return soluciones;
     }
 
-    private void construirBlockchainRecursivo(List<Transaccion> transacciones, int maxTamanioBloque,
+    private void construirBlockchainRecursivo(List<Transaccion> transacciones, int maxTamanioBloque,// Backtracking
                                               int maxValorBloque, int maxTransacciones, int indice,
                                               List<Transaccion> bloqueActual, List<List<Bloque>> soluciones,
                                               List<Bloque> bloquesActuales) {
+        // SI los datos son valido para un bloque , se crea un nuevo bloque
         if (esBloqueValido(bloqueActual, maxValorBloque, maxTamanioBloque, maxTransacciones)) {
             Bloque nuevoBloque = new Bloque();
-            nuevoBloque.setTransacciones(new ArrayList<>(bloqueActual));
-            nuevoBloque.setTamanioTotal(calcularTamanioTotal(bloqueActual));
-            nuevoBloque.setValorTotal(calcularValorTotal(bloqueActual));
-            bloquesActuales.add(nuevoBloque);
+            nuevoBloque.setTransacciones(new ArrayList<>(bloqueActual)); // Ingresa las transacciones en el nuevo bloque
+            nuevoBloque.setTamanioTotal(calcularTamanioTotal(bloqueActual));// Calcula el tamaño del bloque actual y lo agrega
+            nuevoBloque.setValorTotal(calcularValorTotal(bloqueActual)); // // calcula valor total y lo agrega al nuevo bloque
+            bloquesActuales.add(nuevoBloque); // Se agrega a la lista de bloques
 
-            if (indice == transacciones.size()) {
-                soluciones.add(new ArrayList<>(bloquesActuales));
-            } else {
+            if (indice == transacciones.size()) { // Se pregunta si las transacciones terminaron
+                soluciones.add(new ArrayList<>(bloquesActuales)); // Se agrega como posible solucion
+            } else { // y sino se sigue buscando las transacciones para guardar en el bloque
                 for (int i = indice; i < transacciones.size(); i++) {
                     Transaccion transaccion = transacciones.get(i);
-                    if (sePuedeAgregar(transaccion, bloqueActual)) {
-                        bloqueActual.add(transaccion);
+                    if (sePuedeAgregar(transaccion, bloqueActual)) { // Verifica si cumple con los permisos para guardarolo
+                        bloqueActual.add(transaccion); // Agrega la transaccion al bloque actual
+                        // Vuelve analizar otra combinacion de transaccion para el bloque
                         construirBlockchainRecursivo(transacciones, maxTamanioBloque, maxValorBloque, maxTransacciones,
                                 i + 1, bloqueActual, soluciones, bloquesActuales);
                         bloqueActual.remove(bloqueActual.size() - 1);
@@ -84,9 +87,6 @@ public class AlgoritmoDeBlockchainImpl implements AlgoritmoDeBlockchain {
             return false;
         }
 
-        if (transaccion.getFirmasActuales() < transaccion.getFirmasRequeridas()) {
-            return false;
-        }
-        return true;
+        return transaccion.getFirmasActuales() >= transaccion.getFirmasRequeridas();
     }
 }
