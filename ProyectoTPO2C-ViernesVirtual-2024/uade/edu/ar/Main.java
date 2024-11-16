@@ -22,9 +22,9 @@ public class Main {
                 System.out.println("Cadena de bloques " + (i + 1) + ":");
                 List<Bloque> cadena = blockchain.get(i);
 
-                for (int j = 0; j < blockchain.size(); j++) {
+                for (int j = 0; j < blockchain.size()-1; j++) {
                     Bloque bloque = cadena.get(j);
-                    System.out.println("   Bloque " + (j + 1) + ":");
+                    System.out.println("   Bloque " + (j) + ":");
                     System.out.println("        Tamaño total: " + bloque.getTamanioTotal());
                     System.out.println("        Valor total:  " + bloque.getValorTotal());
                     System.out.println("        Transacciones: ");

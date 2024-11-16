@@ -20,43 +20,46 @@ public class AlgoritmoDeBlockchainImpl implements AlgoritmoDeBlockchain {
                                                   int maxBloques) {
         List<List<Bloque>> soluciones = new ArrayList<>();
         List<Bloque> bloquesActuales = new ArrayList<>();
-        construirBlockchainRecursivo(transacciones, maxTamanioBloque, maxValorBloque, maxTransacciones, // se llama
-                // Recursivamente al metodo countruirBlockchainRecursivo
-                0, new ArrayList<>(), soluciones, bloquesActuales);
+        List<Transaccion> transaccionesActuales = new ArrayList<>();
+        Bloque bloqueActual = new Bloque();
+        construirBlockchainRecursivo(transacciones, maxTamanioBloque, maxValorBloque, maxTransacciones, // se llama recursivamente al metodo countruirBlockchainRecursivo
+                0, transaccionesActuales, soluciones, bloquesActuales,bloqueActual);
         return soluciones;
     }
 
     private void construirBlockchainRecursivo(List<Transaccion> transacciones, int maxTamanioBloque,// Backtracking
                                               int maxValorBloque, int maxTransacciones, int indice,
-                                              List<Transaccion> bloqueActual, List<List<Bloque>> soluciones,
-                                              List<Bloque> bloquesActuales) {
+                                              List<Transaccion> transaccionesActuales, List<List<Bloque>> soluciones,
+                                              List<Bloque> bloquesActuales,Bloque bloqueActual) {
         // SI los datos son valido para un bloque , se crea un nuevo bloque
-        if (esBloqueValido(bloqueActual, maxValorBloque, maxTamanioBloque, maxTransacciones)) {
-            Bloque nuevoBloque = new Bloque();
-            nuevoBloque.setTransacciones(new ArrayList<>(bloqueActual)); // Ingresa las transacciones en el nuevo bloque
-            nuevoBloque.setTamanioTotal(calcularTamanioTotal(bloqueActual));// Calcula el tamaño del bloque actual y lo agrega
-            nuevoBloque.setValorTotal(calcularValorTotal(bloqueActual)); // // calcula valor total y lo agrega al nuevo bloque
-            bloquesActuales.add(nuevoBloque); // Se agrega a la lista de bloques
+        if (esBloqueValido(transaccionesActuales, maxValorBloque, maxTamanioBloque, maxTransacciones)) {
 
-            if (indice == transacciones.size()) { // Se pregunta si las transacciones terminaron
-                soluciones.add(new ArrayList<>(bloquesActuales)); // Se agrega como posible solucion
-            } else { // y sino se sigue buscando las transacciones para guardar en el bloque
-                for (int i = indice; i < transacciones.size(); i++) {
-                    Transaccion transaccion = transacciones.get(i);
-                    if (sePuedeAgregar(transaccion, bloqueActual)) { // Verifica si cumple con los permisos para guardarolo
-                        bloqueActual.add(transaccion); // Agrega la transaccion al bloque actual
-                        // Explora el siguiente nivel del arbol de combinaciones
-                        construirBlockchainRecursivo(transacciones, maxTamanioBloque, maxValorBloque, maxTransacciones,
-                                i + 1, bloqueActual, soluciones, bloquesActuales);
-                        bloqueActual.remove(bloqueActual.size() - 1); //
-                    }
+            bloquesActuales.add(bloqueActual); // Agrego el nuevo bloque solo si no existe en la lista
+            soluciones.add(bloquesActuales); // Se agrega como posible solucion
+
+            // Intento Agregar mas transacciones al bloque actual
+            for (int i = indice; i < transacciones.size(); i++) {
+                Transaccion transaccion = transacciones.get(i);
+                // Pregunta si se puede guardar la transaccion
+                if (sePuedeAgregar(transaccion, transaccionesActuales)) { // Verifica si cumple con los permisos para guardarolo
+                    transaccionesActuales.add(transaccion);// Agrega la transaccion a la lista transacciones
+                    bloqueActual.setTransacciones(transaccionesActuales); // Agrega las transacciones al bloque
+                    // Explora el siguiente nivel del arbol de combinaciones
+                    construirBlockchainRecursivo(transacciones, maxTamanioBloque, maxValorBloque, maxTransacciones,
+                            i + 1, transaccionesActuales, soluciones, bloquesActuales, bloqueActual);
+                    transaccionesActuales.remove(transaccion);
+                    bloqueActual.setTransacciones(transaccionesActuales); // Saca la ultima transaccion del bloque
+
                 }
             }
+            if (!bloquesActuales.isEmpty()) {
+                bloquesActuales.remove(bloqueActual);
+            }
         }
-        if (!bloquesActuales.isEmpty()){
-            bloquesActuales.remove(bloquesActuales.size() - 1);
-        }
+
     }
+
+
 
     private boolean esBloqueValido(List<Transaccion> bloque, int maxTamanioBloque, int maxValorBloque,
                                    int maxTransacciones) {
@@ -83,12 +86,12 @@ public class AlgoritmoDeBlockchainImpl implements AlgoritmoDeBlockchain {
         return valorTotal;
     }
 
-    private boolean sePuedeAgregar(Transaccion transaccion, List<Transaccion> bloqueActual) {
+    private boolean sePuedeAgregar(Transaccion transaccion, List<Transaccion> transacciones) {
         Transaccion dependencia = transaccion.getDependencia();
-        if (dependencia != null && !bloqueActual.contains(dependencia)) {
+        if (dependencia != null && !transacciones.contains(dependencia)) {
             return false;
         }
-
         return transaccion.getFirmasActuales() >= transaccion.getFirmasRequeridas();
     }
+
 }
